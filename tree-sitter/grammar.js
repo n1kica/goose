@@ -44,6 +44,7 @@ const UNSIGNED_TYPES = ['u8', 'u16', 'u32', 'u64'];
 
 const ASSIGNMENT_OPERATORS = [
   '=', '.=', '+=', '-=', '*=', '/=', '%=', '&=', '|=', '^=', '<<=', '>>=',
+  '&&=', '||=',
 ];
 
 function sep1(rule, separator) {

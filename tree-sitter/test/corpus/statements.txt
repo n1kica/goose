@@ -81,6 +81,8 @@ fn f() {
     a, b = g();
     i++;
     r .= p;
+    a &&= b;
+    c ||= d;
 }
 
 ---
@@ -102,6 +104,12 @@ fn f() {
           (identifier)
           (argument_list)))
       (increment_statement
+        (identifier))
+      (assignment_statement
+        (identifier)
+        (identifier))
+      (assignment_statement
+        (identifier)
         (identifier))
       (assignment_statement
         (identifier)
