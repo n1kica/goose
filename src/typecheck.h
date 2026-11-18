@@ -2067,6 +2067,8 @@ struct TypeCheck {
     void RetypeVal(Val &v, TypeExpr *ct);
     Val CheckRefIdentity(Binary *b);
     Val CheckLogical(Binary *b);
+    void CheckConditionalRight(const FlowState &snap, const FlowState &mid,
+                               vector<VarDef *> &rightkills, const function<void()> &check);
     Val CheckBinaryResult(Binary *b, Val &lv, Val &rv);
     Val NumericBinary(Binary *b, Val lv, Val rv, TypeExpr *&ct, bool trial);
     void DecidedComparison(Binary *b, const Val &lv, const Val &rv, TypeExpr *lt, TypeExpr *rt);

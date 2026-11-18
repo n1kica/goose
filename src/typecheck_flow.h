@@ -3176,10 +3176,22 @@ inline void TypeCheck::CompoundAssign(Assign *a, TypeExpr *st, bool writable) {
                  "instantiation, §9.5)");
     auto isbit = a->op == T_ANDEQ || a->op == T_OREQ || a->op == T_XOREQ;
     auto isshift = a->op == T_SHLEQ || a->op == T_SHREQ;
+    auto islogical = a->op == T_ANDANDEQ || a->op == T_OROREQ;
     if (IsIndexT(st)) NoIndexUpdate(a, TName(a->op), st);
     if (IsOpaque(LoadType(st))) {
         // An exemplar's opaque value (CheckExemplars) takes any operand.
         Operand(a->rhs);
+    } else if (islogical) {
+        // `a &&= b` is `a = a && b`: the right side is a condition, checked
+        // as `&&` checks its right operand (CheckLogical), and runs only
+        // when the update does.
+        if (st->kind != TY_BOOL)
+            Error(a, cat("operator ", TName(a->op), " cannot be applied to ", TypeStr(st)));
+        // A bool target is never narrowed by its own test, so the flow
+        // before the right side is the one it is checked in.
+        auto snap = SaveFlow();
+        vector<VarDef *> rightkills;
+        CheckConditionalRight(snap, snap, rightkills, [&] { CheckCond(a->rhs); });
     } else if (st->kind == TY_INT && st->intstorage != IS_VARINT && isshift) {
         // A shift count is any integer type, masked to the width (§6.2).
         CheckIntAny(a->rhs);
