@@ -30,6 +30,7 @@ namespace goose {
     F(T_NOT,      "!")   F(T_BITNOT,   "~") \
     F(T_BITAND,   "&")   F(T_BITOR,    "|")  F(T_XOR,   "^") \
     F(T_ANDAND,   "&&")  F(T_OROR,     "||") \
+    F(T_ANDANDEQ, "&&=") F(T_OROREQ, "||=") \
     F(T_ARROW,    "->")  F(T_FATARROW, "=>")
 
 #define TOKENS_KEYWORDS \
@@ -311,12 +312,14 @@ struct Lexer {
                 else Set(T_GT);
                 return;
             case '&':
-                if (*p == '&') { p++; Set(T_ANDAND); }
+                if (*p == '&' && p[1] == '=') { p += 2; Set(T_ANDANDEQ); }
+                else if (*p == '&') { p++; Set(T_ANDAND); }
                 else if (*p == '=') { p++; Set(T_ANDEQ); }
                 else Set(T_BITAND);
                 return;
             case '|':
-                if (*p == '|') { p++; Set(T_OROR); }
+                if (*p == '|' && p[1] == '=') { p += 2; Set(T_OROREQ); }
+                else if (*p == '|') { p++; Set(T_OROR); }
                 else if (*p == '=') { p++; Set(T_OREQ); }
                 else Set(T_BITOR);
                 return;
