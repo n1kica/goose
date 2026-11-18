@@ -2167,7 +2167,7 @@ struct Parser {
             switch (lex.tok) {
                 case T_ASSIGN: case T_DOTASSIGN: case T_PLUSEQ: case T_MINUSEQ:
                 case T_MULEQ: case T_DIVEQ: case T_MODEQ: case T_ANDEQ: case T_OREQ:
-                case T_XOREQ: case T_SHLEQ: case T_SHREQ: {
+                case T_XOREQ: case T_SHLEQ: case T_SHREQ: case T_ANDANDEQ: case T_OROREQ: {
                     auto op = lex.tok;
                     lex.Next();
                     auto rhs = ParseExpr();
@@ -2243,6 +2243,7 @@ struct Parser {
         switch (lex.tok) {
             case T_DOTASSIGN: case T_PLUSEQ: case T_MINUSEQ: case T_MULEQ: case T_DIVEQ:
             case T_MODEQ: case T_ANDEQ: case T_OREQ: case T_XOREQ: case T_SHLEQ: case T_SHREQ:
+            case T_ANDANDEQ: case T_OROREQ:
                 Error(cat("several targets take a call's results with `=` alone, not `",
                           TokStr(), "` (§7.1)"));
             default: break;
