@@ -2013,12 +2013,16 @@ The operators follow C and Rust:
 
 * Comparisons. The logical operators `! && ||` take a `bool` or an optional,
   which counts as a condition: true when it holds a value. `&&` and `||`
-  short-circuit.
+  short-circuit. The compound forms `&&=` and `||=` do too: `a &&= e` is
+  `a = a && e`, and `e` runs only when it can change `a` (while `a` is true,
+  for `&&=`; while it is false, for `||=`). `a` is a `bool` place, and `e` is
+  checked like the right operand of `&&`.
 
 * Bitwise `~ & | ^ << >>` on integers.
 
-* Assignment statements on assignable lvalues: `=`, `+=`, and the compound form
-  of every other binary operator, including shifts.
+* Assignment statements on assignable lvalues: `=`, and the compound form of
+  every arithmetic, bitwise and logical operator, including shifts (`+=`,
+  `&&=`, `||=`, …; see the logical operators above).
 
 * Reference rebinding `.=` and reference identity `.==`/`.!=` (§3.8).
 
@@ -5182,7 +5186,7 @@ postfix     := "[" expr "]"                      // fixed array (const expr)
 stmt        := decl | assign | incdec | guardstmt | deferstmt | exprstmt | constfor | constif
 decl        := ("reusable" ("[" "]")?)? ("let" | "var" | "const") identlist (":" type)?
                (("=" | ".=") exprlist)? ";"     // .= binds by reference (§3.8)
-assign      := lvalue assignop expr ";"          // = .= += -= *= /= %= &= |= ^= <<= >>=
+assign      := lvalue assignop expr ";"          // = .= += -= *= /= %= &= |= ^= <<= >>= &&= ||=
 incdec      := lvalue ("++" | "--") ";"
 exprstmt    := expr ";"
 guardstmt   := "guard" expr ("else" blockexpr | ";")  // guards the rest of its block (§6.4)

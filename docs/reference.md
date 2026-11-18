@@ -461,6 +461,31 @@ its own type*, with `.0` after a whole number: `1.0`, `0.1`, `-0.0`; `inf`,
 so `if n { … }` with an integer `n` is an error; write `if n != 0` instead.
 `&&` and `||` short-circuit.
 
+The compound forms `&&=` and `||=` do the same: `a &&= e` is `a = a && e`,
+and `e` runs only when it can change `a`: while `a` is true for `&&=`, and
+while it is false for `||=`. The target is a `bool` place, and `e` is checked
+like the right side of `&&`: a `bool`, or an optional, which counts as a
+condition.
+
+```goose
+fn probe(name: u8[:], ok: bool) -> bool { print(name); ok }
+fn main() {
+    var ready = false;
+    ready ||= probe("first", true);     // runs: ready was false
+    ready ||= probe("second", false);   // skipped: ready is already true
+    var found = true;
+    found &&= probe("third", false);    // runs: found was true
+    found &&= probe("fourth", true);    // skipped: found is already false
+    print(ready, " ", found);
+}
+```
+
+```
+first
+third
+true false
+```
+
 ### `varint`
 
 `varint` is a variable-length integer *storage* type for fields and array
@@ -4274,9 +4299,10 @@ varint i8 i16 i32 i64 u8 u16 u32 u64 f32 f64`.
 | logical and | `&&` |
 | logical or | `\|\|` |
 
-Assignment statements: `=`, `.=`, and the compound form of every binary
-operator (`+=`, `<<=`, `&=`, …); `++` and `--` on integer lvalues. A range
-`a..b` appears only in slicing brackets, `for` headers and match arms.
+Assignment statements: `=`, `.=`, and the compound form of every arithmetic,
+bitwise and logical operator (`+=`, `<<=`, `&=`, `&&=`, `||=`, …); `++` and
+`--` on integer lvalues. A range `a..b` appears only in slicing brackets, `for`
+headers and match arms.
 Spec §6.1, Appendix D.
 
 ## Appendix B. Glossary
