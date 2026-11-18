@@ -2011,7 +2011,8 @@ The operators follow C and Rust:
 * Arithmetic: `+ - * / %`. Integer `%` is Euclidean (§6.2); float `%` is C
   `fmod`.
 
-* Comparisons. The logical operators `! && ||` accept `bool` only; `&&` and `||`
+* Comparisons. The logical operators `! && ||` take a `bool` or an optional,
+  which counts as a condition: true when it holds a value. `&&` and `||`
   short-circuit.
 
 * Bitwise `~ & | ^ << >>` on integers.
