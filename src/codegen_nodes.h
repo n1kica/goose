@@ -163,14 +163,7 @@ inline string Binary::CgX(CodeGen &cg) {
         // operand's statements may only run when the left allows. So may
         // the restores of the temporaries it builds on data stacks, which
         // are dead once its truth value is taken.
-        cg.L("if (", op == T_ANDAND ? t : cat("!", t), ") {");
-        cg.ind++;
-        cg.PushSc(CodeGen::SC_PLAIN);
-        auto r = cg.GenTruth(right);
-        cg.L(t, " = (uint8_t)(", r, " != 0);");
-        cg.PopSc();
-        cg.ind--;
-        cg.L("}");
+        cg.GenCondRhs(op == T_ANDAND ? t : cat("!", t), t, right);
         return t;
     }
     auto lt = cg.OperandT(left->exprtype);
@@ -913,6 +906,15 @@ inline void Assign::CgStmt(CodeGen &cg) {
         lv.stk = s;
     }
     if (op == T_DOTASSIGN) { cg.GenRebind(this, lv); return; }
+    // `a &&= e` is `a = a && e` and `a ||= e` is `a = a || e`: the old value
+    // decides, before e runs, whether e runs and whether the target is
+    // stored. The condition reads the target once, as the && and || of a
+    // Binary do, and e's statements run only inside it.
+    if (op == T_ANDANDEQ || op == T_OROREQ) {
+        assert(lv.val);
+        cg.GenCondRhs(op == T_ANDANDEQ ? lv.s : cat("!", lv.s), lv.s, rhs);
+        return;
+    }
     // Read the old value before the RHS runs, as for scalar compound math,
     // where the RHS runs statements that could change it. Aggregates use
     // the ordinary elementwise lowering, with both operands evaluated

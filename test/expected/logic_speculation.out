@@ -7,3 +7,5 @@ false true true false true
 010101010101
 false true 0
 true false 2
+true false 2
+false true 4

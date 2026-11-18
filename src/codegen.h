@@ -1057,6 +1057,7 @@ struct CodeGen {
     string GenRefVal(Node *child, Line ln);
     string GenXD(Node *n, TypeExpr *want);
     string GenTruth(Node *n);
+    void GenCondRhs(const string &cond, const string &dst, Node *rhs);
     bool SpeculativeForm(Binary *b);
     Binary *ChainOp(Node *n);
     bool RangeTest(Binary *b, Node *&x, Node *&y);

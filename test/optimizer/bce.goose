@@ -854,6 +854,16 @@ fn plus_one_provable(s: i64[:]) -> i64 {
     return r;
 }
 
+// --- compound logical assignments ------------------------------------------
+
+// `on &&= e` runs e only when `on` is true, so a check e makes holds only on
+// that path: the check after the statement is kept.
+fn compound_and(s: i64[:], k: i64, go: bool) -> i64 {
+    var on = go;
+    on &&= s[k] == 3;
+    return s[k] + (if on { 100 } else { 0 }); // bce:keep (e may not have run)
+}
+
 // --- driver ----------------------------------------------------------------
 
 fn main() {
@@ -935,4 +945,6 @@ fn main() {
     print(plus_one_condition(data));          // 35
     print(plus_one_unbounded(data, data2[1])); // 4
     print(plus_one_provable(data));           // 35
+    print(compound_and(data, data2[1], true)); // 103
+    print(compound_and(data, data2[1], false)); // 3
 }

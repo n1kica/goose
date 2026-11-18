@@ -184,6 +184,11 @@ fn assignments(var x: i64) {
     print(q.b + arr[0] + x);
 }
 
+fn logical_assigns(var a: bool, var o: bool) {
+    a &&= o;
+    o ||= a;
+}
+
 fn struct_literals() {
     let named = Packed_pa { a: [1, 2, 3], b: 4, c: 5, d: 6 };
     let defaulted = Packed_pa { a: [1, 2, 3], b: 4 };
@@ -431,6 +436,7 @@ fn main_parser_all() {
     literals();
     print(operators(3, 4));
     assignments(5);
+    logical_assigns(true, false);
     struct_literals();
     let arr = [9, 8, 7];
     print(references_and_slices(arr));

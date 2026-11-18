@@ -1242,6 +1242,21 @@ inline string CodeGen::GenTruth(Node *n) {
     return x;
 }
 
+// Emits `if (cond) { <rhs's statements>; dst = truth(rhs); }`: the right side
+// of a && or || that runs only where its left operand lets it, or of a
+// compound `&&=` or `||=`. Its statements run only inside the branch, and so
+// do the restores of the temporaries they build on data stacks.
+inline void CodeGen::GenCondRhs(const string &cond, const string &dst, Node *rhs) {
+    L("if (", cond, ") {");
+    ind++;
+    PushSc(SC_PLAIN);
+    auto r = GenTruth(rhs);
+    L(dst, " = (uint8_t)(", r, " != 0);");
+    PopSc();
+    ind--;
+    L("}");
+}
+
 // Whether a && or || takes the unconditional form of Binary::CgX: in a loop
 // that can be straight-line code, a right operand that can neither fail nor
 // have an effect, evaluated whatever the left gave (§6.11).

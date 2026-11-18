@@ -4542,7 +4542,16 @@ inline bool VarDecl::BceWalk(BCE &b) {
 inline bool Assign::BceWalk(BCE &b) {
     b.WalkLvalParts(lval);
     auto gen = b.nextgen;
-    b.Walk(rhs);
+    if ((op == T_ANDANDEQ || op == T_OROREQ) && b.mode != BCE::M_KILLS) {
+        // The right side runs only when the target does not settle the
+        // update, so its facts and effects merge against the path that skips
+        // it (Binary::BceWalk, for && and ||).
+        auto after = b.flow;
+        b.Walk(rhs);
+        b.flow = b.Meet(after, b.flow);
+    } else {
+        b.Walk(rhs);
+    }
     if (op == T_DOTASSIGN) {
         auto ch = b.ChainOf(lval);
         if (Is<Ident>(lval) && ch.kind == BCE::CH_OK) {

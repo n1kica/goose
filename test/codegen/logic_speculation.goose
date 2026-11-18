@@ -148,6 +148,19 @@ fn guarded() {
     print(yes && bump(true), " ", no || bump(false), " ", calls);         // true false 2
 }
 
+// Compound logical assignments run their right operand only where the target
+// does not settle the update, as && and || run theirs.
+fn assigns() {
+    var on = true;
+    var off = false;
+    off &&= bump(true);                    // settled by the target: not run
+    on ||= bump(false);                    // not run
+    print(on, " ", off, " ", calls);       // true false 2
+    on &&= bump(false);                    // runs
+    off ||= bump(true);                    // runs
+    print(on, " ", off, " ", calls);       // false true 4
+}
+
 fn main() {
     some .= holder;
     if calls > 0 {
@@ -168,4 +181,5 @@ fn main() {
     loops();
     optionals();
     guarded();
+    assigns();
 }

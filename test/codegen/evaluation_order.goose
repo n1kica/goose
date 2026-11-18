@@ -78,4 +78,12 @@ fn main() {
     let pr .= p;
     pr.x = bump();
     print(p.x, " ", p.y);
+    // A compound logical assignment computes its target's index once, whether
+    // or not its right side runs.
+    var flags: bool[3] = [false; 3];
+    var picks = 0;
+    fn pick() -> i64 { picks += 1; return picks; }
+    flags[pick()] ||= true;
+    flags[pick()] &&= flags[0];
+    print(flags[0], " ", flags[1], " ", flags[2], " ", picks);
 }
